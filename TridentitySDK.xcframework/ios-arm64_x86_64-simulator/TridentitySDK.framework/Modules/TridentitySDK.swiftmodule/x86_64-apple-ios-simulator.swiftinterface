@@ -1,6 +1,7 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
-// swift-module-flags: -target x86_64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name TridentitySDK
+// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.128.108 clang-1500.0.40.1)
+// swift-module-flags: -target x86_64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name TridentitySDK
+// swift-module-flags-ignorable: -enable-bare-slash-regex
 import AVFoundation
 import Combine
 import CommonCrypto
@@ -21,7 +22,6 @@ import Security
 import Swift
 import SwiftUI
 import SystemConfiguration
-@_exported import TridentitySDK
 import UIKit
 import _Concurrency
 import _StringProcessing
@@ -31,9 +31,15 @@ import os
 extension QuartzCore.CALayer {
   public func logLayerTree(withIndent: Swift.Int = 0)
 }
+@objc @_Concurrency.MainActor(unsafe) open class TDYPKHUDSuccessView : TridentitySDK.TDYPKHUDSquareBaseView, TridentitySDK.TDYPKHUDAnimating {
+  @_Concurrency.MainActor(unsafe) public init(title: Swift.String? = nil, subtitle: Swift.String? = nil)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc open func startAnimation()
+  @_Concurrency.MainActor(unsafe) @objc open func stopAnimation()
+  @objc deinit
+}
 public protocol FBInterfaceMessaging {
-  func registerToken(_ fcmToken: Swift.String?)
-  func processFCM(notificationInfo userInfo: [Swift.AnyHashable : Any], clientInfo: TridentitySDK.ClientConfig?, navigation: UIKit.UINavigationController?)
+  func processFCM(notificationInfo userInfo: [Swift.AnyHashable : Any], navigation: UIKit.UINavigationController?)
 }
 public protocol TransactionInfo {
   var amount: Swift.String? { get }
@@ -51,81 +57,105 @@ public protocol TransactionPayment {
   var transaction: Self.Info { get }
   var paymentStatus: TridentitySDK.PushStatus { get }
 }
-@objc public class ClientConfig : ObjectiveC.NSObject {
-  @objc public init(_ clientID: Swift.String, appID: Swift.String, apikey: Swift.String)
+@_inheritsConvenienceInitializers @objc public class ClientConfig : ObjectiveC.NSObject {
+  @objc override dynamic public init()
   @objc deinit
 }
-@objc @_Concurrency.MainActor(unsafe) open class TDYPKHUDTextView : TridentitySDK.TDYPKHUDWideBaseView {
-  @_Concurrency.MainActor(unsafe) public init(text: Swift.String?)
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
-  @_Concurrency.MainActor(unsafe) @objc override dynamic open func layoutSubviews()
-  @_Concurrency.MainActor(unsafe) final public let titleLabel: UIKit.UILabel
+public enum TDYHUDContentType {
+  case success
+  case error
+  case progress
+  case image(UIKit.UIImage?)
+  case rotatingImage(UIKit.UIImage?)
+  case labeledSuccess(title: Swift.String?, subtitle: Swift.String?)
+  case labeledError(title: Swift.String?, subtitle: Swift.String?)
+  case labeledProgress(title: Swift.String?, subtitle: Swift.String?)
+  case labeledImage(image: UIKit.UIImage?, title: Swift.String?, subtitle: Swift.String?)
+  case labeledRotatingImage(image: UIKit.UIImage?, title: Swift.String?, subtitle: Swift.String?)
+  case label(Swift.String?)
+  case systemActivity
+  case customView(view: UIKit.UIView)
+}
+@_hasMissingDesignatedInitializers final public class TDYHUD {
+  public static var dimsBackground: Swift.Bool {
+    get
+    set
+  }
+  public static var allowsInteraction: Swift.Bool {
+    get
+    set
+  }
+  public static var leadingMargin: CoreFoundation.CGFloat {
+    get
+    set
+  }
+  public static var trailingMargin: CoreFoundation.CGFloat {
+    get
+    set
+  }
+  public static var isVisible: Swift.Bool {
+    get
+  }
+  public static func show(_ content: TridentitySDK.TDYHUDContentType, onView view: UIKit.UIView? = nil)
+  public static func hide(_ completion: ((Swift.Bool) -> Swift.Void)? = nil)
+  public static func hide(animated: Swift.Bool, completion: ((Swift.Bool) -> Swift.Void)? = nil)
+  public static func hide(afterDelay delay: Foundation.TimeInterval, completion: ((Swift.Bool) -> Swift.Void)? = nil)
+  public static func flash(_ content: TridentitySDK.TDYHUDContentType, onView view: UIKit.UIView? = nil)
+  public static func flash(_ content: TridentitySDK.TDYHUDContentType, onView view: UIKit.UIView? = nil, delay: Foundation.TimeInterval, completion: ((Swift.Bool) -> Swift.Void)? = nil)
+  public static func registerForKeyboardNotifications()
+  public static func deregisterFromKeyboardNotifications()
   @objc deinit
 }
-@_hasMissingDesignatedInitializers final public class TDYPKHUDAnimation {
-  public static let discreteRotation: QuartzCore.CAAnimation
-  @objc deinit
+public enum KeyChainKey : Swift.String, Swift.Codable {
+  case clientId
+  case consentId
+  case featureId
+  case customerId
+  case apiKey
+  case aesKey
+  case offlineOtp
+  case deviceUUID
+  case simID
+  case secretKey
+  case serverPubkey
+  case token
+  case expiry
+  case payloadSecretKey
+  case clientServerPubkey
+  case clientToken
+  case clientExpiry
+  case enviroment
+  case biomtricPopupShown
+  case appId
+  case biometricAuthenticationData
+  case clientBin
+  case shouldAllowSecurityCheck
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
 }
-@objc @_Concurrency.MainActor(unsafe) open class TDYPKHUDProgressView : TridentitySDK.TDYPKHUDSquareBaseView, TridentitySDK.TDYPKHUDAnimating {
-  @_Concurrency.MainActor(unsafe) public init(title: Swift.String? = nil, subtitle: Swift.String? = nil)
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
-  @_Concurrency.MainActor(unsafe) @objc public func startAnimation()
-  @_Concurrency.MainActor(unsafe) @objc public func stopAnimation()
-  @objc deinit
-}
-@objc @_Concurrency.MainActor(unsafe) open class TDYPKHUDSuccessView : TridentitySDK.TDYPKHUDSquareBaseView, TridentitySDK.TDYPKHUDAnimating {
-  @_Concurrency.MainActor(unsafe) public init(title: Swift.String? = nil, subtitle: Swift.String? = nil)
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
-  @_Concurrency.MainActor(unsafe) @objc open func startAnimation()
-  @_Concurrency.MainActor(unsafe) @objc open func stopAnimation()
+@objc @_inheritsConvenienceInitializers open class PKHUDAssets : ObjectiveC.NSObject {
+  open class var crossImage: UIKit.UIImage {
+    get
+  }
+  open class var checkmarkImage: UIKit.UIImage {
+    get
+  }
+  open class var progressActivityImage: UIKit.UIImage {
+    get
+  }
+  open class var progressCircularImage: UIKit.UIImage {
+    get
+  }
+  @objc override dynamic public init()
   @objc deinit
 }
 @available(*, unavailable, renamed: "Notification.Name.reachabilityChanged")
 public let SDKReachabilityChangedNotification: Foundation.NSNotification.Name
 extension Foundation.NSNotification.Name {
   public static let reachabilityChanged: Foundation.Notification.Name
-}
-@objc public protocol TDYPKHUDAnimating {
-  @objc func startAnimation()
-  @objc optional func stopAnimation()
-}
-@objc @_inheritsConvenienceInitializers open class TDYPKHUD : ObjectiveC.NSObject {
-  public var viewToPresentOn: UIKit.UIView?
-  public typealias TimerAction = (Swift.Bool) -> Swift.Void
-  @available(*, deprecated, message: "Will be removed with Swift4 support, use gracePeriod instead")
-  public var graceTime: Foundation.TimeInterval {
-    get
-    set(newPeriod)
-  }
-  public var gracePeriod: Swift.Double
-  open class var sharedHUD: TridentitySDK.TDYPKHUD {
-    get
-  }
-  @objc override dynamic public init()
-  convenience public init(viewToPresentOn view: UIKit.UIView)
-  @objc deinit
-  open var dimsBackground: Swift.Bool
-  open var userInteractionOnUnderlyingViewsEnabled: Swift.Bool {
-    get
-    set
-  }
-  open var isVisible: Swift.Bool {
-    get
-  }
-  open var contentView: UIKit.UIView {
-    get
-    set
-  }
-  open var effect: UIKit.UIVisualEffect? {
-    get
-    set
-  }
-  open var leadingMargin: CoreFoundation.CGFloat
-  open var trailingMargin: CoreFoundation.CGFloat
-  open func show(onView view: UIKit.UIView? = nil)
-  open func hide(animated anim: Swift.Bool = true, completion: TridentitySDK.TDYPKHUD.TimerAction? = nil)
-  open func hide(_ animated: Swift.Bool, completion: TridentitySDK.TDYPKHUD.TimerAction? = nil)
-  open func hide(afterDelay delay: Foundation.TimeInterval, completion: TridentitySDK.TDYPKHUD.TimerAction? = nil)
 }
 public func base32Encode(_ data: Foundation.Data) -> Swift.String
 public func base32HexEncode(_ data: Foundation.Data) -> Swift.String
@@ -186,49 +216,14 @@ final public class TDYFloatValueProvider {
   final public func value(frame: CoreFoundation.CGFloat) -> Any
   @objc deinit
 }
-public enum TDYHUDContentType {
-  case success
-  case error
-  case progress
-  case image(UIKit.UIImage?)
-  case rotatingImage(UIKit.UIImage?)
-  case labeledSuccess(title: Swift.String?, subtitle: Swift.String?)
-  case labeledError(title: Swift.String?, subtitle: Swift.String?)
-  case labeledProgress(title: Swift.String?, subtitle: Swift.String?)
-  case labeledImage(image: UIKit.UIImage?, title: Swift.String?, subtitle: Swift.String?)
-  case labeledRotatingImage(image: UIKit.UIImage?, title: Swift.String?, subtitle: Swift.String?)
-  case label(Swift.String?)
-  case systemActivity
-  case customView(view: UIKit.UIView)
-}
-@_hasMissingDesignatedInitializers final public class TDYHUD {
-  public static var dimsBackground: Swift.Bool {
-    get
-    set
-  }
-  public static var allowsInteraction: Swift.Bool {
-    get
-    set
-  }
-  public static var leadingMargin: CoreFoundation.CGFloat {
-    get
-    set
-  }
-  public static var trailingMargin: CoreFoundation.CGFloat {
-    get
-    set
-  }
-  public static var isVisible: Swift.Bool {
-    get
-  }
-  public static func show(_ content: TridentitySDK.TDYHUDContentType, onView view: UIKit.UIView? = nil)
-  public static func hide(_ completion: ((Swift.Bool) -> Swift.Void)? = nil)
-  public static func hide(animated: Swift.Bool, completion: ((Swift.Bool) -> Swift.Void)? = nil)
-  public static func hide(afterDelay delay: Foundation.TimeInterval, completion: ((Swift.Bool) -> Swift.Void)? = nil)
-  public static func flash(_ content: TridentitySDK.TDYHUDContentType, onView view: UIKit.UIView? = nil)
-  public static func flash(_ content: TridentitySDK.TDYHUDContentType, onView view: UIKit.UIView? = nil, delay: Foundation.TimeInterval, completion: ((Swift.Bool) -> Swift.Void)? = nil)
-  public static func registerForKeyboardNotifications()
-  public static func deregisterFromKeyboardNotifications()
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class TDYPKHUDSquareBaseView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) public init(image: UIKit.UIImage? = nil, title: Swift.String? = nil, subtitle: Swift.String? = nil)
+  @_Concurrency.MainActor(unsafe) final public let imageView: UIKit.UIImageView
+  @_Concurrency.MainActor(unsafe) final public let titleLabel: UIKit.UILabel
+  @_Concurrency.MainActor(unsafe) final public let subtitleLabel: UIKit.UILabel
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func layoutSubviews()
   @objc deinit
 }
 public class TDYAsset : Swift.Codable {
@@ -237,11 +232,15 @@ public class TDYAsset : Swift.Codable {
   @objc deinit
   public func encode(to encoder: any Swift.Encoder) throws
 }
-@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class TDYPKHUDWideBaseView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) @objc dynamic public init()
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
-  @objc deinit
+@objc public protocol TridentSDKDelegate {
+  @objc func fetchStatus(data: [Swift.String : Any])
+  @objc func showCustomerStatus(message: Swift.String)
+}
+@objc public protocol HeadlessSDKProtocol {
+  @objc func sdkStatusUpdate(data: [Swift.String : Any])
+}
+@objc public protocol TridentityMFASDKProtocol {
+  @objc func sdkStatusUpdate(data: [Swift.String : Any])
 }
 extension Foundation.Data {
   public var bytes: [Swift.UInt8] {
@@ -266,54 +265,8 @@ public protocol AuthenticatorTheme {
 extension TridentitySDK.CameraHandler : AVFoundation.AVCaptureMetadataOutputObjectsDelegate {
   @objc dynamic public func metadataOutput(_ output: AVFoundation.AVCaptureMetadataOutput, didOutput metadataObjects: [AVFoundation.AVMetadataObject], from connection: AVFoundation.AVCaptureConnection)
 }
-@objc @_Concurrency.MainActor(unsafe) open class TDYPKHUDErrorView : TridentitySDK.TDYPKHUDSquareBaseView, TridentitySDK.TDYPKHUDAnimating {
-  @_Concurrency.MainActor(unsafe) public init(title: Swift.String? = nil, subtitle: Swift.String? = nil)
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
-  @_Concurrency.MainActor(unsafe) @objc public func startAnimation()
-  @_Concurrency.MainActor(unsafe) @objc public func stopAnimation()
-  @objc deinit
-}
-@objc public protocol TridentSDKDelegate {
-  @objc func fetchStatus(data: [Swift.String : Any])
-}
-@objc @_inheritsConvenienceInitializers public class TridentitySDKInterface : ObjectiveC.NSObject {
-  @objc public static var sharedAuth: TridentitySDK.TridentitySDKInterface?
-  @objc weak public var tridentSDKDelegate: (any TridentitySDK.TridentSDKDelegate)?
-  weak public var notificationDelegate: (any TridentitySDK.NotificationState)?
-  @objc override dynamic public init()
-  @objc deinit
-}
-extension TridentitySDK.TridentitySDKInterface {
-  @objc dynamic public func configureSDK(withClientReq clientInfo: TridentitySDK.ClientConfig, appTheme: Foundation.NSDictionary?, environment: Swift.String?)
-  public func invokeSDK(withMobileNumber mobile: Swift.String, fcmToken: Swift.String, presenter navigationViewController: UIKit.UINavigationController)
-  public func openScanner(currentViewCtrl onViewCtrl: UIKit.UIViewController)
-  public func openTransaction(forScannedData info: [Swift.AnyHashable : Any])
-  @objc dynamic public func registration(withMobileNumber mobile: Swift.String, fcmToken: Swift.String, presenter navigationViewController: UIKit.UINavigationController)
-  @objc dynamic public func isRegistered(withCustomerID customerID: Swift.String?, mobileNumber: Swift.String?, completionHandler: @escaping (Swift.Bool, [Swift.String : Any]?) -> Swift.Void)
-  public func saveAES(_ devAes: Swift.String, _ qaAes: Swift.String, _ uatAes: Swift.String)
-  @objc dynamic public func validateToken(token: Swift.String, channel: Swift.String, completionHandler: @escaping (TridentitySDK.TDYTokenValidateResponse?, (any Swift.Error)?) -> Swift.Void)
-  @objc dynamic public func registerToken(_ fcmToken: Swift.String?)
-}
 extension TridentitySDK.TridentitySDKInterface : TridentitySDK.FBInterfaceMessaging {
-  @objc dynamic public func wakeupApp(NotificationInfo userInfo: [Swift.AnyHashable : Any])
-  @objc dynamic public func processFCM(notificationInfo userInfo: [Swift.AnyHashable : Any], clientInfo: TridentitySDK.ClientConfig? = nil, navigation: UIKit.UINavigationController? = nil)
-  public func saveQR(userInfo: [Swift.AnyHashable : Any])
-}
-public enum KeyChainKey : Swift.String, Swift.Codable {
-  case clientId
-  case consentId
-  case featureId
-  case customerId
-  case apiKey
-  case aesKey
-  case offlineOtp
-  case deviceUUID
-  case simID
-  public init?(rawValue: Swift.String)
-  public typealias RawValue = Swift.String
-  public var rawValue: Swift.String {
-    get
-  }
+  @objc dynamic public func processFCM(notificationInfo userInfo: [Swift.AnyHashable : Any], navigation: UIKit.UINavigationController? = nil)
 }
 @_hasMissingDesignatedInitializers public class KeyChain {
   public static let shareKC: TridentitySDK.KeyChain
@@ -323,95 +276,18 @@ public enum KeyChainKey : Swift.String, Swift.Codable {
   public func removeAll() -> Swift.Bool
   @objc deinit
 }
-@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class TDYPKHUDSquareBaseView : UIKit.UIView {
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class TDYPKHUDWideBaseView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public init()
   @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
   @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
-  @_Concurrency.MainActor(unsafe) public init(image: UIKit.UIImage? = nil, title: Swift.String? = nil, subtitle: Swift.String? = nil)
-  @_Concurrency.MainActor(unsafe) final public let imageView: UIKit.UIImageView
-  @_Concurrency.MainActor(unsafe) final public let titleLabel: UIKit.UILabel
-  @_Concurrency.MainActor(unsafe) final public let subtitleLabel: UIKit.UILabel
+  @objc deinit
+}
+@objc @_Concurrency.MainActor(unsafe) open class TDYPKHUDTextView : TridentitySDK.TDYPKHUDWideBaseView {
+  @_Concurrency.MainActor(unsafe) public init(text: Swift.String?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
   @_Concurrency.MainActor(unsafe) @objc override dynamic open func layoutSubviews()
+  @_Concurrency.MainActor(unsafe) final public let titleLabel: UIKit.UILabel
   @objc deinit
-}
-@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class TDYPKHUDRotatingImageView : TridentitySDK.TDYPKHUDSquareBaseView, TridentitySDK.TDYPKHUDAnimating {
-  @_Concurrency.MainActor(unsafe) @objc public func startAnimation()
-  @_Concurrency.MainActor(unsafe) @objc public func stopAnimation()
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
-  @_Concurrency.MainActor(unsafe) override public init(image: UIKit.UIImage? = nil, title: Swift.String? = nil, subtitle: Swift.String? = nil)
-  @objc deinit
-}
-public enum WibmoAuthenticatorError : Swift.Error {
-  public var domain: Swift.String {
-    get
-  }
-  public enum RegisterFailedReason {
-    case pvcRetry
-    case bindingFailed
-    case smsSendError(reason: TridentitySDK.WibmoAuthenticatorError.SmsSendFailureReason)
-    case invalidToken
-    case mobileNumberMismatch
-  }
-  public enum ConnectionFailureReason {
-    case noInternetAccess
-    case timeOut
-    case unknown
-    case cancelled
-    public static func == (a: TridentitySDK.WibmoAuthenticatorError.ConnectionFailureReason, b: TridentitySDK.WibmoAuthenticatorError.ConnectionFailureReason) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-  public enum ServerResponseFailure {
-    case serverError(Swift.String?)
-  }
-  public enum CreationFailureReason {
-    case keyEmpty(Swift.String)
-    case valueEmpty(Swift.String)
-    case unknown(any Swift.Error)
-  }
-  public enum SmsSendFailureReason {
-    case cancelled
-    case failed
-    case notAvailable
-    case invalidToken
-    case eventTimeout
-    public static func == (a: TridentitySDK.WibmoAuthenticatorError.SmsSendFailureReason, b: TridentitySDK.WibmoAuthenticatorError.SmsSendFailureReason) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-  public enum BioError {
-    case passcodeEnrollfailed
-    case biometricEnrollfailed
-    case failed
-    case cancelled
-    case authlocked
-    case unknown
-    public static func == (a: TridentitySDK.WibmoAuthenticatorError.BioError, b: TridentitySDK.WibmoAuthenticatorError.BioError) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-  case responseSerializeFailed
-  case responseObjectCreationFailed(reason: TridentitySDK.WibmoAuthenticatorError.CreationFailureReason)
-  case connectionError(reason: TridentitySDK.WibmoAuthenticatorError.ConnectionFailureReason)
-  case serverResponse(reason: TridentitySDK.WibmoAuthenticatorError.ServerResponseFailure)
-  case unknownError
-  case registerFailed(reason: TridentitySDK.WibmoAuthenticatorError.RegisterFailedReason)
-  case requestURLNotfound
-  case userAuthenticationFailed(reason: TridentitySDK.WibmoAuthenticatorError.BioError)
-  case savetoKeyChainFailed
-  case failedByReason(Swift.String)
-  case updateTrnxFailed(reason: Swift.String)
-}
-extension TridentitySDK.WibmoAuthenticatorError : Foundation.LocalizedError {
-  public var errorDescription: Swift.String? {
-    get
-  }
 }
 @objc @_Concurrency.MainActor(unsafe) final public class TDYPKHUDSystemActivityIndicatorView : TridentitySDK.TDYPKHUDSquareBaseView, TridentitySDK.TDYPKHUDAnimating {
   @_Concurrency.MainActor(unsafe) @objc dynamic public init()
@@ -421,9 +297,146 @@ extension TridentitySDK.WibmoAuthenticatorError : Foundation.LocalizedError {
   @_Concurrency.MainActor(unsafe) @objc final public func startAnimation()
   @objc deinit
 }
+@objc @_inheritsConvenienceInitializers open class TDYPKHUD : ObjectiveC.NSObject {
+  public var viewToPresentOn: UIKit.UIView?
+  public typealias TimerAction = (Swift.Bool) -> Swift.Void
+  @available(*, deprecated, message: "Will be removed with Swift4 support, use gracePeriod instead")
+  public var graceTime: Foundation.TimeInterval {
+    get
+    set(newPeriod)
+  }
+  public var gracePeriod: Swift.Double
+  open class var sharedHUD: TridentitySDK.TDYPKHUD {
+    get
+  }
+  @objc override dynamic public init()
+  convenience public init(viewToPresentOn view: UIKit.UIView)
+  @objc deinit
+  open var dimsBackground: Swift.Bool
+  open var userInteractionOnUnderlyingViewsEnabled: Swift.Bool {
+    get
+    set
+  }
+  open var isVisible: Swift.Bool {
+    get
+  }
+  open var contentView: UIKit.UIView {
+    get
+    set
+  }
+  open var effect: UIKit.UIVisualEffect? {
+    get
+    set
+  }
+  open var leadingMargin: CoreFoundation.CGFloat
+  open var trailingMargin: CoreFoundation.CGFloat
+  open func show(onView view: UIKit.UIView? = nil)
+  open func hide(animated anim: Swift.Bool = true, completion: TridentitySDK.TDYPKHUD.TimerAction? = nil)
+  open func hide(_ animated: Swift.Bool, completion: TridentitySDK.TDYPKHUD.TimerAction? = nil)
+  open func hide(afterDelay delay: Foundation.TimeInterval, completion: TridentitySDK.TDYPKHUD.TimerAction? = nil)
+}
+public enum WibmoAuthenticatorError : Swift.Error {
+  public var domain: Swift.String {
+    get
+  }
+  case connectionError(reason: TridentitySDK.ConnectionFailureReason)
+  case serverResponse(reason: TridentitySDK.ServerResponseFailure)
+  case unknownError
+  case sdkTimedout
+  case retryLimitBreached
+  case biometricFailed
+  case tokenExpired
+  case registerFailed(reason: TridentitySDK.RegisterFailedReason)
+  case failedByReason(Swift.String)
+  case updateTransactionFailed(reason: Swift.String)
+}
+extension TridentitySDK.WibmoAuthenticatorError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+public enum RegisterFailedReason {
+  case pvcRetry
+  case bindingFailed
+  case smsSendError(reason: TridentitySDK.SmsSendFailureReason)
+  case invalidToken
+  case mobileNumberMismatch
+}
+public enum ConnectionFailureReason {
+  case noInternetAccess
+  case apiTokenExpired
+  public static func == (a: TridentitySDK.ConnectionFailureReason, b: TridentitySDK.ConnectionFailureReason) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum ServerResponseFailure {
+  case serverError(Swift.String?)
+}
+public enum SmsSendFailureReason {
+  case cancelled
+  case failed
+  case notAvailable
+  case invalidToken
+  case eventTimeout
+  public static func == (a: TridentitySDK.SmsSendFailureReason, b: TridentitySDK.SmsSendFailureReason) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension TridentitySDK.RegisterFailedReason : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+extension TridentitySDK.ConnectionFailureReason : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+extension TridentitySDK.ServerResponseFailure : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+extension TridentitySDK.SmsSendFailureReason : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers final public class TDYPKHUDAnimation {
+  public static let discreteRotation: QuartzCore.CAAnimation
+  @objc deinit
+}
 public protocol NotificationState : AnyObject {
   func doClearNotification(_ trnxID: Swift.String?)
   func recievedNotification(_ trnxID: Swift.String?)
+}
+public struct PushTransactionConvertor {
+  public static func makeTransactionDetail(fromPushInfo userInfo: [Swift.AnyHashable : Any]) -> TridentitySDK.TransactionDetail?
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class TridentitySDKInterface : ObjectiveC.NSObject {
+  @objc public static var sharedAuth: TridentitySDK.TridentitySDKInterface
+  @objc weak public var tridentSDKDelegate: (any TridentitySDK.TridentSDKDelegate)? {
+    @objc get
+    @objc set
+  }
+  weak public var notificationDelegate: (any TridentitySDK.NotificationState)?
+  @objc deinit
+}
+extension TridentitySDK.TridentitySDKInterface {
+  @objc dynamic public func configureSDK(appTheme: Foundation.NSDictionary?, jsonObject: [Swift.String : Any])
+  @objc dynamic public func invokeSDK(withMobileNumber mobile: Swift.String, fcmToken: Swift.String, presenter navigationViewController: UIKit.UINavigationController)
+  @objc dynamic public func initiateRegistration(withMobileNumber mobile: Swift.String, fcmToken: Swift.String, presenter navigationViewController: UIKit.UINavigationController)
+  @objc dynamic public func initiateRegistration(withMobileNumber mobile: Swift.String, fcmToken: Swift.String, presenter navigationViewController: UIKit.UINavigationController, homeViewController: UIKit.UIViewController)
+  @objc dynamic public func isRegistered(withCustomerID customerID: Swift.String?, mobileNumber: Swift.String?, completionHandler: @escaping (Swift.Bool, [Swift.String : Any]?) -> Swift.Void)
+}
+extension TridentitySDK.TridentitySDKInterface {
+  @objc dynamic public func showOfflineOtp(withMobileNumber mobile: Swift.String, fcmToken: Swift.String, presenter navigationViewController: UIKit.UINavigationController)
+  @objc dynamic public func showOfflineOtpWithOutTabbar(withMobileNumber mobile: Swift.String, fcmToken: Swift.String, presenter navigationViewController: UIKit.UINavigationController)
+  @objc dynamic public func validateToken(token: Swift.String, channel: Swift.String, completionHandler: @escaping (TridentitySDK.TDYTokenValidateResponse?, (any Swift.Error)?) -> Swift.Void)
 }
 public enum TDYOTPAlgorithm {
   case sha1
@@ -453,34 +466,11 @@ public struct TDYHOTP {
   public init?(secret: Foundation.Data, digits: Swift.Int = 6, algorithm: TridentitySDK.TDYOTPAlgorithm = .sha1)
   public func generate(counter: Swift.UInt64) -> Swift.String?
 }
-public enum ServerDownState : Swift.String {
-  case initial
-  case processing
-  case failed
-  case success
-  public init?(rawValue: Swift.String)
-  public typealias RawValue = Swift.String
-  public var rawValue: Swift.String {
-    get
-  }
-}
-public enum FeatureResult : Swift.String {
-  case push
-  case offline
-  case bioMetric
-  case qrType
-  public init?(rawValue: Swift.String)
-  public typealias RawValue = Swift.String
-  public var rawValue: Swift.String {
-    get
-  }
-}
 public enum PushStatus : Swift.String, Swift.Codable {
   case accept
   case decline
   case expired
   case cancelled
-  case notMyTransaction
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
@@ -492,36 +482,9 @@ public func print(_ items: Swift.String..., function: Swift.String = #function, 
 extension Swift.Array where Element == Swift.UInt8 {
   public func toHexString() -> Swift.String
 }
-@objc @_inheritsConvenienceInitializers open class PKHUDAssets : ObjectiveC.NSObject {
-  open class var crossImage: UIKit.UIImage {
-    get
-  }
-  open class var checkmarkImage: UIKit.UIImage {
-    get
-  }
-  open class var progressActivityImage: UIKit.UIImage {
-    get
-  }
-  open class var progressCircularImage: UIKit.UIImage {
-    get
-  }
-  @objc override dynamic public init()
-  @objc deinit
-}
-public enum WibmoSTORYBOARD : Swift.String {
-  case land
-  case activity
-  case transaction
-  case offline
-  case home
-  case alert
-  case camera
-  case terms
-  public init?(rawValue: Swift.String)
-  public typealias RawValue = Swift.String
-  public var rawValue: Swift.String {
-    get
-  }
+@objc public protocol TDYPKHUDAnimating {
+  @objc func startAnimation()
+  @objc optional func stopAnimation()
 }
 public struct TDYTOTP {
   public let secret: Foundation.Data
@@ -532,43 +495,43 @@ public struct TDYTOTP {
   public func generate(time: Foundation.Date) -> Swift.String?
   public func generate(secondsPast1970: Swift.Int) -> Swift.String?
 }
+@objc @_Concurrency.MainActor(unsafe) open class TDYPKHUDErrorView : TridentitySDK.TDYPKHUDSquareBaseView, TridentitySDK.TDYPKHUDAnimating {
+  @_Concurrency.MainActor(unsafe) public init(title: Swift.String? = nil, subtitle: Swift.String? = nil)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc public func startAnimation()
+  @_Concurrency.MainActor(unsafe) @objc public func stopAnimation()
+  @objc deinit
+}
 @objc public class TDYTokenValidateResponse : ObjectiveC.NSObject, Swift.Codable {
   @objc final public let status: Swift.String?
   @objc deinit
   public func encode(to encoder: any Swift.Encoder) throws
   required public init(from decoder: any Swift.Decoder) throws
 }
-@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class TDYLottieView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) @objc override dynamic open func didMoveToWindow()
-  @_Concurrency.MainActor(unsafe) @objc override dynamic open var contentMode: UIKit.UIView.ContentMode {
-    @objc get
-    @objc set
-  }
-  @_Concurrency.MainActor(unsafe) @objc override dynamic open func layoutSubviews()
+@objc @_Concurrency.MainActor(unsafe) open class TDYPKHUDProgressView : TridentitySDK.TDYPKHUDSquareBaseView, TridentitySDK.TDYPKHUDAnimating {
+  @_Concurrency.MainActor(unsafe) public init(title: Swift.String? = nil, subtitle: Swift.String? = nil)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc public func startAnimation()
+  @_Concurrency.MainActor(unsafe) @objc public func stopAnimation()
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class TDYPKHUDRotatingImageView : TridentitySDK.TDYPKHUDSquareBaseView, TridentitySDK.TDYPKHUDAnimating {
+  @_Concurrency.MainActor(unsafe) @objc public func startAnimation()
+  @_Concurrency.MainActor(unsafe) @objc public func stopAnimation()
   @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) override public init(image: UIKit.UIImage? = nil, title: Swift.String? = nil, subtitle: Swift.String? = nil)
   @objc deinit
 }
 extension TridentitySDK.KeyChainKey : Swift.Equatable {}
 extension TridentitySDK.KeyChainKey : Swift.Hashable {}
 extension TridentitySDK.KeyChainKey : Swift.RawRepresentable {}
-extension TridentitySDK.WibmoAuthenticatorError.ConnectionFailureReason : Swift.Equatable {}
-extension TridentitySDK.WibmoAuthenticatorError.ConnectionFailureReason : Swift.Hashable {}
-extension TridentitySDK.WibmoAuthenticatorError.SmsSendFailureReason : Swift.Equatable {}
-extension TridentitySDK.WibmoAuthenticatorError.SmsSendFailureReason : Swift.Hashable {}
-extension TridentitySDK.WibmoAuthenticatorError.BioError : Swift.Equatable {}
-extension TridentitySDK.WibmoAuthenticatorError.BioError : Swift.Hashable {}
+extension TridentitySDK.ConnectionFailureReason : Swift.Equatable {}
+extension TridentitySDK.ConnectionFailureReason : Swift.Hashable {}
+extension TridentitySDK.SmsSendFailureReason : Swift.Equatable {}
+extension TridentitySDK.SmsSendFailureReason : Swift.Hashable {}
 extension TridentitySDK.TDYOTPAlgorithm : Swift.Equatable {}
 extension TridentitySDK.TDYOTPAlgorithm : Swift.Hashable {}
-extension TridentitySDK.ServerDownState : Swift.Equatable {}
-extension TridentitySDK.ServerDownState : Swift.Hashable {}
-extension TridentitySDK.ServerDownState : Swift.RawRepresentable {}
-extension TridentitySDK.FeatureResult : Swift.Equatable {}
-extension TridentitySDK.FeatureResult : Swift.Hashable {}
-extension TridentitySDK.FeatureResult : Swift.RawRepresentable {}
 extension TridentitySDK.PushStatus : Swift.Equatable {}
 extension TridentitySDK.PushStatus : Swift.Hashable {}
 extension TridentitySDK.PushStatus : Swift.RawRepresentable {}
-extension TridentitySDK.WibmoSTORYBOARD : Swift.Equatable {}
-extension TridentitySDK.WibmoSTORYBOARD : Swift.Hashable {}
-extension TridentitySDK.WibmoSTORYBOARD : Swift.RawRepresentable {}
