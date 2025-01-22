@@ -1,0 +1,11 @@
+framework module TridentitySDK {
+  umbrella header "TridentitySDK.h"
+  export *
+
+  module * { export * }
+}
+
+module TridentitySDK.Swift {
+  header "TridentitySDK-Swift.h"
+  requires objc
+}

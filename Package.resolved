@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "payucrashreporter-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/payu-intrepos/PayUCrashReporter-iOS",
+      "state" : {
+        "revision" : "9fdb4a40df43a71f4da41b1e0212b14011c5b768",
+        "version" : "3.0.1"
+      }
+    }
+  ],
+  "version" : 2
+}
