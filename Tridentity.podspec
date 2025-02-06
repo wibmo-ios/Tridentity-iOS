@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name                = "Tridentity-iOS"
+  s.name                = "Tridentity"
   s.version             = "1.0.1"
   s.license             = "MIT"
   s.homepage            = "https://github.com/wibmo-ios/Tridentity-iOS.git"
